@@ -1,6 +1,5 @@
 import { openModal } from './modal.js';
 
-const cards = document.querySelectorAll('.card');
 
 function createCard(item, { deleteCard, likeCard, openImage } ) {
 	const cardTemplate = document.querySelector("#card-template").content;
