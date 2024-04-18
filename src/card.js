@@ -56,4 +56,4 @@ function openImage(evt, cardElement) {
 }
 
 
-export { createCard, deleteCard, likeCard, openImage, cards };
+export { createCard, deleteCard, likeCard, openImage };
