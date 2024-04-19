@@ -1,5 +1,3 @@
-import { openModal } from './modal.js';
-
 
 function createCard(item, { deleteCard, likeCard, openImage } ) {
 	const cardTemplate = document.querySelector("#card-template").content;
@@ -40,20 +38,6 @@ function likeCard(evt, cardElement) {
 	}
 }
 
-function openImage(evt, cardElement) {
-	const popup = document.querySelector('.popup_type_image');
-	const popupImage = document.querySelector('.popup__image');
-	const cardImage = cardElement.querySelector('.card__image');
-	const cardTitle = cardElement.querySelector(".card__title");
-	const popupCaption = document.querySelector('.popup__caption');
-
-	if (cardImage) {
-		openModal(popup);
-		popupImage.src = cardImage.src;
-		popupCaption.textContent = cardTitle.textContent;
-	}
-
-}
 
 
-export { createCard, deleteCard, likeCard, openImage };
+export { createCard, deleteCard, likeCard };
