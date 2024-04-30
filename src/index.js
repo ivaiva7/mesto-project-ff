@@ -12,6 +12,7 @@ import './pages/index.css';
 import { initialCards } from './cards.js';
 import { createCard, deleteCard, likeCard } from './card.js';
 import { openModal, closeModal } from './modal.js';
+import { enableValidation } from './validation.js';
 
 const contentSection = document.querySelector(".content");
 const places = contentSection.querySelector(".places");
@@ -28,7 +29,14 @@ const nameInput = formEdit.elements['name'];
 const jobInput = formEdit.elements['description'];
 const placeNameInput = formPlace.elements['place-name'];
 const linkInput = formPlace.elements['link'];
-
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+};
 
 initialCards.forEach(function (element) {
   const card = createCard(element, { deleteCard, likeCard, openImage });
@@ -89,5 +97,9 @@ formElements.forEach(form => {
     });
   });
 
-export { placesList, openImage };
+
+enableValidation(validationConfig);
+
+
+export { placesList, openImage, formElements, editPopup, addPopup, formPlace, formEdit, validationConfig, placeNameInput };
 

@@ -1,4 +1,5 @@
-
+import { clearValidation } from './validation.js';
+import { editPopup, addPopup, formEdit, formPlace,validationConfig, placeNameInput } from './index.js';
 function handleTransition(evt) {
 	const popup = evt.target.closest('.popup');
 	if (popup && !(popup.classList.contains('popup_is-animated'))) {
@@ -7,12 +8,12 @@ function handleTransition(evt) {
 }
 
 function openModal(popupElement) {
-		if (!popupElement) return;
+	clearValidation(formEdit, validationConfig);
+	if (!popupElement) return;
 		popupElement.classList.add('popup_is-opened', 'popup_is-animated');
 		popupElement.addEventListener('click', closeModalByOverlay);
 		popupElement.addEventListener('click', handleTransition);
 		document.addEventListener('keydown', closeModalByEscape);
-
 }
 
 const closeModalByOverlay = (evt) => {
@@ -38,6 +39,13 @@ function closeModal(popupElement) {
 	popupElement.removeEventListener('click', closeModalByOverlay);
 	popupElement.removeEventListener('transitioned', handleTransition);
 	document.removeEventListener('keydown', closeModalByEscape);
+
+	if (popupElement === editPopup) {
+		clearValidation(formEdit, validationConfig);
+	} else if (popupElement === addPopup) {
+		placeNameInput.value = '';
+		clearValidation(formPlace, validationConfig);
+	}
 }
 
 
