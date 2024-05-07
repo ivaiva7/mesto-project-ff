@@ -9,8 +9,8 @@
 // @todo: Вывести карточки на страницу
 
 import './pages/index.css';
-import { initialCards } from './cards.js';
-import { createCard, deleteCard, likeCard } from './card.js';
+import { getProfileData, getInitialCards, updateProfileData, postNewCard } from './api.js';
+import { createCard, likeCard, deleteCard } from './card.js';
 import { openModal, closeModal } from './modal.js';
 import { enableValidation } from './validation.js';
 
@@ -37,24 +37,51 @@ const validationConfig = {
   inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
 };
+const profileDataPromise = getProfileData();
+const cardsDataPromise = getInitialCards();
+let currentUserId;
+Promise.all([profileDataPromise, cardsDataPromise])
+    .then(([userData, cardsData]) => {
+      currentUserId = userData._id;
+      cardsData.forEach(card => {
+        const isOwner = card.owner._id === currentUserId;
+        const newCard = createCard(card, isOwner, { deleteCard, likeCard, openImage });
+        placesList.append(newCard);
+        console.log(cardsData);
+      });
+        console.log(userData);
 
-initialCards.forEach(function (element) {
-  const card = createCard(element, { deleteCard, likeCard, openImage });
-  placesList.append(card);
-});
+        const nameElement = document.querySelector('.profile__title');
+        const aboutElement = document.querySelector('.profile__description');
+        const avatarElement = document.querySelector('.profile__image');
+
+        nameElement.textContent = userData.name;
+        aboutElement.textContent = userData.about;
+        avatarElement.src = userData.avatar;
+        avatarElement.alt = userData.name;
+
+    })
+    .catch(error => {
+      console.error('Ошибка при получении данных:', error);
+    });
+
 
 function handleFormSubmit(evt) {
   evt.preventDefault();
 
   const formEdit = document.querySelector('.popup__form[name="edit-profile"]')
   const formPlace = document.querySelector('.popup__form[name="new-place"]');
+  const newName = nameInput.value;
+  const newJobName = jobInput.value;
 
   if (evt.target === formEdit) {
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = jobInput.value;
+    updateProfileData(newName, newJobName);
 
   } else if (evt.target === formPlace) {
-    const card = createCard({ name: placeNameInput.value, link: linkInput.value }, { deleteCard: deleteCard, likeCard: likeCard, openImage: openImage });
+    const card = createCard({ name: placeNameInput.value, link: linkInput.value }, currentUserId, { deleteCard: deleteCard, likeCard: likeCard, openImage: openImage });
+    postNewCard(placeNameInput.value, linkInput.value);
     placesList.prepend(card);
     evt.currentTarget.reset();
   }
