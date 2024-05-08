@@ -14,7 +14,10 @@
   </header>
   <main class="content">
     <section class="profile page__section">
-      <div class="profile__image" style="background-image: url('<%= require('./images/avatar.jpg') %>');"></div>
+      <div class ="profile__image-container">
+        <img class="profile__image">
+        <button class="profile__avatar-button" type="button"></button>
+      </div>
       <div class="profile__info">
         <h1 class="profile__title">Жак-Ив Кусто</h1>
         <button class="profile__edit-button" type="button"></button>
@@ -32,6 +35,19 @@
       © 2021 Mesto Russia
     </p>
   </footer>
+  <div class="popup popup_type_avatar">
+    <div class="popup__content-avatar">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="new-avatar" action="">
+        <input type="url" name="link" id="link-input-avatar" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+        <span class="popup__input_type_error link-input-avatar-error"></span>
+        <button type="submit" class="button popup__button">Сохранить</button>
+        <div class="loader">Сохранение...</div>
+      </form>
+    </div>
+  </div>
+  
   <div class="popup popup_type_edit">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
@@ -43,6 +59,7 @@
           <input type="text" name="description" id="description-input" class="popup__input popup__input_type_description" placeholder="Занятие" minlength="2" maxlength="200" required>
           <span class="form__input-error description-input-error"></span>
         <button type="submit" class="button popup__button">Сохранить</button>
+        <div class="loader">Сохранение...</div>
       </form>
       </div>
     </div>
@@ -58,6 +75,7 @@
             <input type="url" name="link" id="link-input" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
             <span class="popup__input_type_error link-input-error"></span>
             <button type="submit" class="button popup__button">Создать</button>
+            <div class="loader">Сохранение...</div>
           </form>
         </div>
       </div>
@@ -66,6 +84,16 @@
       <button type="button" class="popup__close"></button>
       <img src="" alt="" class="popup__image">
       <p class="popup__caption"></p>
+    </div>
+  </div>
+  <div class="popup popup_type_delete">
+    <div class="popup__content popup__content-delete">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Вы уверены?</h3>
+      <form class="popup__form" name="delete-place" action="">
+        <button type="submit" class="button popup__button popup__button-type-delete">Да</button>
+        <div class="loader">Удаление...</div>
+      </form>
     </div>
   </div>
 </div>

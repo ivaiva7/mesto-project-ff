@@ -1,4 +1,5 @@
 import { likeCardPut, dislikeCard, deleteCardFromServer } from './api.js';
+import { openDeleteModal } from './modal';
 
 function createCard(item, isOwner, { deleteCard, likeCard, openImage } ) {
 	const cardTemplate = document.querySelector("#card-template").content;
@@ -36,7 +37,6 @@ function createCard(item, isOwner, { deleteCard, likeCard, openImage } ) {
 }
 
 function likeCard(cardElement, cardId) {
-	console.log(cardId);
 	const likeButton = cardElement.querySelector(".card__like-button");
 	const likeCounter = cardElement.querySelector(".card__like-counter");
 	const isLiked = likeButton.classList.contains('card__like-button_is-active');
@@ -45,7 +45,6 @@ function likeCard(cardElement, cardId) {
 		dislikeCard(cardId)
 			.then(updatedCardData => {
 				likeCounter.textContent = updatedCardData.likes.length;
-
 				likeButton.classList.remove('card__like-button_is-active');
 			})
 			.catch(error => {
@@ -63,15 +62,9 @@ function likeCard(cardElement, cardId) {
 	}
 }
 
-	function deleteCard(cardElement, cardId) {
-		deleteCardFromServer(cardId)
-			.then(() => {
-				cardElement.remove();
-			})
-			.catch(error => {
-				console.error(`Ошибка при удалении карточки: ${error}`);
-			});
-	}
+function deleteCard(cardElement, cardId) {
+	openDeleteModal(cardElement, cardId);
+}
 
 
 export { createCard, likeCard, deleteCard };

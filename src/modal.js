@@ -1,5 +1,17 @@
 import { clearValidation } from './validation.js';
-import { editPopup, addPopup, formEdit, formPlace,validationConfig, placeNameInput } from './index.js';
+import {
+	editPopup,
+	addPopup,
+	formEdit,
+	formPlace,
+	validationConfig,
+	placeNameInput,
+	linkInput,
+	formAvatar,
+	avatarInput,
+	deletePopup
+} from './index.js';
+import { deleteCardFromServer } from './api.js';
 function handleTransition(evt) {
 	const popup = evt.target.closest('.popup');
 	if (popup && !(popup.classList.contains('popup_is-animated'))) {
@@ -14,6 +26,26 @@ function openModal(popupElement) {
 		popupElement.addEventListener('click', closeModalByOverlay);
 		popupElement.addEventListener('click', handleTransition);
 		document.addEventListener('keydown', closeModalByEscape);
+}
+
+function openDeleteModal(cardElement, cardId) {
+	const confirmButton = document.querySelector('.popup__button-type-delete');
+	const cancelButton = document.querySelector('.popup__close');
+	confirmButton.addEventListener('click', async () => {
+		try {
+			console.log('Начало отправки запроса на удаление');
+			await deleteCardFromServer(cardId);
+			cardElement.remove();
+			closeModal(deletePopup);
+			console.log('Карточка успешно удалена с сервера');
+		} catch (error) {
+			console.error(`Ошибка при удалении карточки: ${error}`);
+		}
+	});
+	cancelButton.addEventListener('click', () => {
+		closeModal(deletePopup);
+	});
+	openModal(deletePopup);
 }
 
 const closeModalByOverlay = (evt) => {
@@ -34,7 +66,6 @@ const closeModalByEscape = (evt) => {
 
 function closeModal(popupElement) {
 	if (!popupElement) return;
-
 	popupElement.classList.remove('popup_is-opened');
 	popupElement.removeEventListener('click', closeModalByOverlay);
 	popupElement.removeEventListener('transitioned', handleTransition);
@@ -44,9 +75,12 @@ function closeModal(popupElement) {
 		clearValidation(formEdit, validationConfig);
 	} else if (popupElement === addPopup) {
 		placeNameInput.value = '';
+		linkInput.value = '';
 		clearValidation(formPlace, validationConfig);
 	}
+		avatarInput.value = '';
+		clearValidation(formAvatar, validationConfig);
 }
 
 
-export { openModal, closeModal, handleTransition, closeModalByEscape, closeModalByOverlay };
+export { openModal, closeModal, handleTransition, closeModalByEscape, closeModalByOverlay, openDeleteModal };
