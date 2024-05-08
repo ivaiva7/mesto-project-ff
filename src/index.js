@@ -9,7 +9,7 @@
 // @todo: Вывести карточки на страницу
 
 import './pages/index.css';
-import { getProfileData, getInitialCards, updateProfileData, postNewCard } from './api.js';
+import { getProfileData, getInitialCards, updateProfileData, postNewCard, updateAvatar, imageUrlCheck, deleteCardFromServer } from './api.js';
 import { createCard, likeCard, deleteCard } from './card.js';
 import { openModal, closeModal } from './modal.js';
 import { enableValidation } from './validation.js';
@@ -20,15 +20,21 @@ const placesList = places.querySelector(".places__list");
 const profile = document.querySelector(".profile");
 const editPopup = document.querySelector(".popup_type_edit");
 const addPopup = document.querySelector(".popup_type_new-card");
+const avatarPopup = document.querySelector(".popup_type_avatar");
+const deletePopup = document.querySelector(".popup_type_delete");
 const formElements = document.querySelectorAll(".popup__form");
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
+const profileImage = document.querySelector('.profile__image');
 const formEdit = document.forms['edit-profile'];
 const formPlace = document.forms['new-place'];
+const formAvatar = document.forms['new-avatar'];
+const formDelete = document.forms['delete-place'];
 const nameInput = formEdit.elements['name'];
 const jobInput = formEdit.elements['description'];
 const placeNameInput = formPlace.elements['place-name'];
 const linkInput = formPlace.elements['link'];
+const avatarInput = formAvatar.elements['link'];
 const validationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -46,11 +52,15 @@ Promise.all([profileDataPromise, cardsDataPromise])
       cardsData.forEach(card => {
         const isOwner = card.owner._id === currentUserId;
         const newCard = createCard(card, isOwner, { deleteCard, likeCard, openImage });
+        const isLikedByCurrentUser = card.likes.some(like => like._id === currentUserId);
+        const likeButton = newCard.querySelector('.card__like-button');
+        if (isLikedByCurrentUser) {
+          likeButton.classList.add('card__like-button_is-active');
+        } else {
+          likeButton.classList.remove('card__like-button_is-active');
+        }
         placesList.append(newCard);
-        console.log(cardsData);
       });
-        console.log(userData);
-
         const nameElement = document.querySelector('.profile__title');
         const aboutElement = document.querySelector('.profile__description');
         const avatarElement = document.querySelector('.profile__image');
@@ -62,31 +72,110 @@ Promise.all([profileDataPromise, cardsDataPromise])
 
     })
     .catch(error => {
-      console.error('Ошибка при получении данных:', error);
+      console.log(`Ошибка при получении данных: ${error}`);
     });
 
+function toggleLoader(formElement) {
+    const loader = formElement.querySelector('.loader');
+    const submitButton = formElement.querySelector('.popup__button');
 
-function handleFormSubmit(evt) {
-  evt.preventDefault();
+    if (loader && submitButton) {
+        loader.style.display = 'flex';
+        submitButton.style.display = 'none';
+    }
 
-  const formEdit = document.querySelector('.popup__form[name="edit-profile"]')
-  const formPlace = document.querySelector('.popup__form[name="new-place"]');
-  const newName = nameInput.value;
-  const newJobName = jobInput.value;
-
-  if (evt.target === formEdit) {
-    profileTitle.textContent = nameInput.value;
-    profileDescription.textContent = jobInput.value;
-    updateProfileData(newName, newJobName);
-
-  } else if (evt.target === formPlace) {
-    const card = createCard({ name: placeNameInput.value, link: linkInput.value }, currentUserId, { deleteCard: deleteCard, likeCard: likeCard, openImage: openImage });
-    postNewCard(placeNameInput.value, linkInput.value);
-    placesList.prepend(card);
-    evt.currentTarget.reset();
-  }
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (loader && submitButton) {
+                loader.style.display = 'none';
+                submitButton.style.display = 'block';
+                resolve();
+            }
+        }, 2000);
+    });
 }
 
+async function handleFormSubmit(evt) {
+    evt.preventDefault();
+    const formElement = evt.target;
+    toggleLoader(formElement);
+
+    try {
+        if (formElement === formEdit) {
+            await submitEditProfileForm(formElement);
+        } else if (formElement === formPlace) {
+            await submitNewPlaceForm(formElement);
+        } else if (formElement === formAvatar) {
+            await submitNewAvatarForm(formElement);
+        }
+    } catch (error) {
+        console.error('Ошибка при отправке формы:', error);
+    } finally {
+        toggleLoader(formElement);
+    }
+}
+
+async function submitEditProfileForm(formElement) {
+    try {
+        const newName = nameInput.value;
+        const newJobName = jobInput.value;
+        await updateProfileData(newName, newJobName);
+        profileTitle.textContent = newName;
+        profileDescription.textContent = newJobName;
+        formElement.reset();
+        closeModal(formElement);
+    } catch (error) {
+        console.log(`Ошибка при отправке формы редактирования профиля: ${error}`);
+    }
+}
+
+async function submitNewPlaceForm(formElement) {
+    try {
+        const name = placeNameInput.value;
+        const imageUrl = linkInput.value;
+        const responseData = await postNewCard(name, imageUrl);
+        const newCard = createCard(responseData, true, { deleteCard: deleteCard, likeCard: likeCard, openImage: openImage });
+        placesList.prepend(newCard);
+        formElement.reset();
+        closeModal(formElement);
+    } catch (error) {
+        console.log(`Ошибка при отправке формы создания нового места: ${error}`);
+    }
+}
+
+async function submitNewAvatarForm(formElement) {
+    try {
+        const newAvatarUrl = avatarInput.value;
+        const isValid = await imageUrlCheck(newAvatarUrl);
+        if (isValid) {
+            const responseData = await updateAvatar(newAvatarUrl);
+            profileImage.src = responseData.avatar;
+            formElement.reset();
+            closeModal(formElement);
+        } else {
+            console.log('Указанный URL не является действительным изображением.');
+        }
+    } catch (error) {
+        console.log(`Ошибка при проверке URL изображения: ${error}`);
+    }
+}
+
+function deleteCardFromDOM(cardElement) {
+    cardElement.remove();
+}
+
+function handleDeleteButtonClick(cardElement, cardId) {
+    deletePopup.addEventListener('submit', async function (evt) {
+        evt.preventDefault();
+        try {
+            await deleteCardFromServer(cardId);
+            deleteCardFromDOM(cardElement);
+            closeModal(deletePopup);
+        } catch (error) {
+            console.error(`Ошибка при удалении карточки: ${error}`);
+        }
+    });
+}
 function openImage(evt, cardElement) {
   const popup = document.querySelector('.popup_type_image');
   const popupImage = document.querySelector('.popup__image');
@@ -99,7 +188,6 @@ function openImage(evt, cardElement) {
     popupImage.src = cardImage.src;
     popupCaption.textContent = cardTitle.textContent;
   }
-
 }
 profile.addEventListener("click", function (evt) {
   if (evt.target.classList.contains('profile__edit-button')) {
@@ -108,6 +196,8 @@ profile.addEventListener("click", function (evt) {
     openModal(editPopup);
   } else if (evt.target.classList.contains('profile__add-button')) {
     openModal(addPopup);
+  } else if (evt.target.classList.contains('profile__avatar-button')) {
+    openModal(avatarPopup);
   }
 });
 
@@ -120,6 +210,10 @@ formElements.forEach(form => {
         closeModal(editPopup);
       } else if (form === formPlace) {
         closeModal(addPopup);
+      } else if (form === formAvatar) {
+        closeModal(avatarPopup);
+      } else if (form === formDelete) {
+          closeModal(deletePopup);
       }
     });
   });
@@ -128,5 +222,5 @@ formElements.forEach(form => {
 enableValidation(validationConfig);
 
 
-export { placesList, openImage, formElements, editPopup, addPopup, formPlace, formEdit, validationConfig, placeNameInput };
+export { placesList, formElements, editPopup, addPopup, formPlace, formEdit, validationConfig, placeNameInput, avatarPopup, linkInput, formAvatar, avatarInput, deletePopup };
 
