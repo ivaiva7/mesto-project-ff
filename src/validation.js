@@ -1,4 +1,4 @@
-import { formElements } from './index.js';
+import { formElements, formEdit } from './index.js';
 
 const showInputError = (formElement, inputElement, errorMessage, validationConfig) => {
 	const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
@@ -15,7 +15,7 @@ const hideInputError = (formElement, inputElement, validationConfig) => {
 		errorElement.textContent = '';
 		errorElement.classList.remove(validationConfig.errorClass);
 	} else {
-		console.error(`Error: Error element not found for input element with id ${inputElement.id}`);
+		console.log(`Ошибка: элемент ошибки не найден для input ${inputElement.id}`);
 	}
 };
 
@@ -70,10 +70,10 @@ const clearValidation = (formElement, validationConfig) => {
 	const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
 	const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 	inputList.forEach((inputElement) => {
-		const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-		inputElement.classList.remove(validationConfig.inputErrorClass);
-		errorElement.textContent = '';
-		errorElement.classList.remove(validationConfig.errorClass);
+		hideInputError(formElement, inputElement, validationConfig);
+		if (formElement !== formEdit) {
+			inputElement.value = '' ;
+		}
 	});
 	buttonElement.classList.add(validationConfig.inactiveButtonClass);
 	buttonElement.setAttribute('disabled', true);
