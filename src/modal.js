@@ -1,4 +1,3 @@
-
 function openModal(popupElement) {
 	if (!popupElement) {
 		return;

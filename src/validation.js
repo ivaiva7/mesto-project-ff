@@ -82,5 +82,3 @@ const clearValidation = (formElement, validationConfig) => {
 
 
 export { enableValidation, clearValidation };
-
-

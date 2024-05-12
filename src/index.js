@@ -1,3 +1,4 @@
+
 // @todo: Темплейт карточки
 
 // @todo: DOM узлы
@@ -315,4 +316,3 @@ enableValidation(validationConfig);
 
 
 export { placesList, formElements, editPopup, addPopup, formPlace, formEdit, validationConfig, placeNameInput, avatarPopup, linkInput, formAvatar, avatarInput, deletePopup, deleteCard, handleDeleteCard }
-
