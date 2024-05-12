@@ -1,7 +1,7 @@
-import { likeCardPut, dislikeCard, deleteCardFromServer } from './api.js';
-import { deleteCard, handleDeleteCard } from './index.js';
+import { likeCardPut, dislikeCard } from './api.js';
+import { openDeleteModal } from './index.js';
 
-function createCard(item, isOwner, { likeCard, openImage, handleDeleteCard }) {
+function createCard(item, isOwner, { likeCard, openImage, openDeleteModal }) {
 	const cardTemplate = document.querySelector("#card-template").content;
 	const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
 
@@ -15,7 +15,7 @@ function createCard(item, isOwner, { likeCard, openImage, handleDeleteCard }) {
 	const deleteButton = cardElement.querySelector(".card__delete-button");
 	if (isOwner) {
 		deleteButton.addEventListener('click', () => {
-			deleteCard(cardElement, item._id);
+			openDeleteModal(cardElement, item._id);
 		});
 	} else {
 		deleteButton.remove();

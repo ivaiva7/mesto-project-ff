@@ -2,7 +2,7 @@ function openModal(popupElement) {
 	if (!popupElement) {
 		return;
 	}
-	popupElement.classList.add('popup_is-opened', 'popup_is-animated');
+	popupElement.classList.add('popup_is-opened');
 	popupElement.addEventListener('click', closeModalByOverlay);
 	document.addEventListener('keydown', closeModalByEscape);
 }

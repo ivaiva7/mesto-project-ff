@@ -1,4 +1,3 @@
-
 const cohortId = 'wff-cohort-12';
 const authToken = '9c458a61-cf94-4bbd-9611-c68472b0443e';
 
