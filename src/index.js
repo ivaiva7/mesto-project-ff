@@ -86,14 +86,14 @@ Promise.all([profileDataPromise, cardsDataPromise])
 
         cardsData.forEach(card => {
             const isOwner = card.owner._id === currentUserId;
-            const newCard = createCard(card, isOwner, { likeCard, openImage, openDeleteModal });
+            const isLikedByCurrentUser = card.likes.some(like => like._id === currentUserId);
+            const newCard = createCard(card, isOwner, { likeCard, openImage, openDeleteModal }, isLikedByCurrentUser );
             placesList.append(newCard);
         });
     })
     .catch(error => {
         console.log(`Ошибка при получении данных: ${error}`);
     });
-
 
 function toggleLoader(loader, submitButton, showLoader) {
     loader.style.display = showLoader ? 'flex' : 'none';
@@ -123,7 +123,7 @@ async function submitNewPlaceForm(formElement) {
         const name = placeNameInput.value;
         const imageUrl = linkInput.value;
         const responseData = await postNewCard(name, imageUrl);
-        const newCard = createCard(responseData, true, { likeCard: likeCard, openImage: openImage, openDeleteModal: openDeleteModal });
+        const newCard = createCard(responseData, true, { likeCard: likeCard, openImage: openImage, openDeleteModal: openDeleteModal }, responseData.isLiked);
         placesList.prepend(newCard);
         formElement.reset();
         closeModal(addPopup);

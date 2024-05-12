@@ -1,7 +1,7 @@
 import { likeCardPut, dislikeCard } from './api.js';
 import { openDeleteModal } from './index.js';
 
-function createCard(item, isOwner, { likeCard, openImage, openDeleteModal }) {
+function createCard(item, isOwner, { likeCard, openImage, openDeleteModal }, isLiked) {
 	const cardTemplate = document.querySelector("#card-template").content;
 	const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
 
@@ -22,6 +22,9 @@ function createCard(item, isOwner, { likeCard, openImage, openDeleteModal }) {
 	}
 
 	const likeButton = cardElement.querySelector(".card__like-button");
+	if (isLiked) {
+		likeButton.classList.add('card__like-button_is-active');
+	}
 	likeButton.addEventListener("click", function () {
 		likeCard(cardElement, item._id);
 	});
@@ -35,7 +38,6 @@ function createCard(item, isOwner, { likeCard, openImage, openDeleteModal }) {
 
 	return cardElement;
 }
-
 
 function likeCard(cardElement, cardId) {
 	const likeButton = cardElement.querySelector(".card__like-button");
@@ -62,8 +64,6 @@ function likeCard(cardElement, cardId) {
 			});
 	}
 }
-
-
 
 
 export { createCard, likeCard };
