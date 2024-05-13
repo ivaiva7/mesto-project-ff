@@ -1,5 +1,3 @@
-import { formElements, formEdit } from './index.js';
-
 const showInputError = (formElement, inputElement, errorMessage, validationConfig) => {
 	const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 	inputElement.classList.add(validationConfig.inputErrorClass);
@@ -56,7 +54,7 @@ const setEventListeners = (formElement, validationConfig) => {
 };
 
 
-const enableValidation = (validationConfig) => {
+const enableValidation = (formElements, validationConfig) => {
 	formElements.forEach((formElement) => {
 		formElement.addEventListener('submit', function (evt) {
 			evt.preventDefault();
@@ -71,9 +69,6 @@ const clearValidation = (formElement, validationConfig) => {
 	const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 	inputList.forEach((inputElement) => {
 		hideInputError(formElement, inputElement, validationConfig);
-		if (formElement !== formEdit) {
-			inputElement.value = '' ;
-		}
 	});
 	buttonElement.classList.add(validationConfig.inactiveButtonClass);
 	buttonElement.setAttribute('disabled', true);

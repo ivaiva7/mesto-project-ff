@@ -66,8 +66,8 @@ const cardsDataPromise = getInitialCards();
 const confirmButton = document.querySelector('.popup__button-type-delete');
 const deleteLoader = deletePopup.querySelector('.loader');
 const popup = document.querySelector('.popup_type_image');
-let popupImage = document.querySelector('.popup__image');
-let popupCaption = document.querySelector('.popup__caption');
+const popupImage = document.querySelector('.popup__image');
+const popupCaption = document.querySelector('.popup__caption');
 let currentCard;
 let currentCardId;
 
@@ -75,14 +75,10 @@ Promise.all([profileDataPromise, cardsDataPromise])
     .then(([userData, cardsData]) => {
         const currentUserId = userData._id;
 
-        const nameElement = document.querySelector('.profile__title');
-        const aboutElement = document.querySelector('.profile__description');
-        const avatarElement = document.querySelector('.profile__image');
-
-        nameElement.textContent = userData.name;
-        aboutElement.textContent = userData.about;
-        avatarElement.src = userData.avatar;
-        avatarElement.alt = userData.name;
+        profileTitle.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        profileImage.src = userData.avatar;
+        profileImage.alt = userData.name;
 
         cardsData.forEach(card => {
             const isOwner = card.owner._id === currentUserId;
@@ -172,11 +168,14 @@ function handleEditButtonClick() {
 
 function handleAddButtonClick() {
     clearValidation(formPlace, validationConfig);
+    placeNameInput.value = '';
+    linkInput.value = '';
     openModal(addPopup);
 }
 
 function handleAvatarButtonClick() {
     clearValidation(formAvatar, validationConfig);
+    avatarInput.value = '';
     openModal(avatarPopup);
 }
 
@@ -220,7 +219,7 @@ async function handleDeleteCard() {
 confirmButton.addEventListener('click', handleDeleteCard);
 
 
-enableValidation(validationConfig);
+enableValidation(formElements, validationConfig);
 
 
 export { placesList, formElements, editPopup, addPopup, formPlace, formEdit, validationConfig, placeNameInput, avatarPopup, linkInput, formAvatar, avatarInput, deletePopup, openDeleteModal }
