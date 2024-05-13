@@ -222,4 +222,4 @@ confirmButton.addEventListener('click', handleDeleteCard);
 enableValidation(formElements, validationConfig);
 
 
-export { placesList, formElements, editPopup, addPopup, formPlace, formEdit, validationConfig, placeNameInput, avatarPopup, linkInput, formAvatar, avatarInput, deletePopup, openDeleteModal }
+export { openDeleteModal }
