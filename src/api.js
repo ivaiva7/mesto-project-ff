@@ -1,146 +1,97 @@
-const cohortId = 'wff-cohort-12';
-const authToken = '9c458a61-cf94-4bbd-9611-c68472b0443e';
+const config = {
+	cohortId: 'wff-cohort-12',
+	baseUrl:  `https://nomoreparties.co/v1/wff-cohort-12`,
+	headers: {
+		authorization: '9c458a61-cf94-4bbd-9611-c68472b0443e',
+	}
+};
 
+const getResponse = (res) => {
+	return res.ok ? res.json() : Promise.reject(`Ошибка ${res.status}`);
+}
 const getProfileData = () =>  {
-	return fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
-		headers: {
-			authorization: authToken
-		}
+	return fetch(`${config.baseUrl}/users/me`, {
+		headers: config.headers,
 	})
-		.then(res => {
-			if (!res.ok) {
-				throw new Error(`Ошибка: ${res.status}`);
-			}
-			return res.json();
-		})
+		.then(getResponse)
 
 }
 
 const getInitialCards = () => {
-	return fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
-		headers: {
-			authorization: authToken
-		}
+	return fetch(`${config.baseUrl}/cards`, {
+		headers: config.headers,
 	})
-		.then(res => {
-			if (!res.ok) {
-				throw new Error(`Ошибка: ${res.status}`);
-			}
-			return res.json();
-		})
+		.then(getResponse)
 }
 
 const updateProfileData = (name, about) => {
-	return fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
+	return fetch(`${config.baseUrl}/users/me`, {
 		method: 'PATCH',
 		headers: {
-			authorization: authToken,
-			'Content-Type': 'application/json'
+			authorization: config.headers.authorization,
+			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
 			name: name,
 			about: about
 		})
 	})
-		.then(res => {
-			if (!res.ok) {
-				throw new Error(`Ошибка: ${res.status}`);
-			}
-			return res.json();
-		})
+		.then(getResponse)
 }
 
-const postNewCard = (name, imageUrl) => {
-	return fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
+const postNewCard = ( {name, link} ) => {
+	return fetch(`${config.baseUrl}/cards`, {
 		method: 'POST',
 		headers: {
-			authorization: authToken,
-			'Content-Type': 'application/json'
+			authorization: config.headers.authorization,
+			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
-			name: name,
-			link: imageUrl
+			name,
+			link
 		})
 	})
-	.then(res => {
-		if (!res.ok) {
-			throw new Error(`Ошибка: ${res.status}`);
-		}
-		return res.json();
-	})
-		.catch(error => {
-			console.log(`Ошибка при добавлении карточки: ${error}`);
-		})
+	.then(getResponse)
 		}
 
 const likeCardPut = (cardId) => {
-	return fetch(`https://nomoreparties.co/v1/${cohortId}/cards/likes/${cardId}`, {
+	return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
 		method: 'PUT',
-		headers: {
-			authorization: authToken
-		}
+		headers: config.headers,
 	})
-		.then(res => {
-			if (!res.ok) {
-				throw new Error(`Ошибка: ${res.status}`);
-			}
-			return res.json();
-		});
+		.then(getResponse)
 }
 
 const dislikeCard = (cardId) => {
-	return fetch(`https://nomoreparties.co/v1/${cohortId}/cards/likes/${cardId}`, {
+	return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
 		method: 'DELETE',
-		headers: {
-			authorization: authToken
-		}
+		headers: config.headers,
 	})
-		.then(res => {
-			if (!res.ok) {
-				throw new Error(`Ошибка: ${res.status}`);
-			}
-			return res.json();
-		});
+		.then(getResponse)
 }
 
 const deleteCardFromServer = (cardId) => {
-	return fetch(`https://nomoreparties.co/v1/${cohortId}/cards/${cardId}`, {
+	return fetch(`${config.baseUrl}/cards/${cardId}`, {
 		method: 'DELETE',
-		headers: {
-			authorization: authToken
-		}
+		headers: config.headers,
 	})
-		.then(res => {
-			if (!res.ok) {
-				throw new Error(`Ошибка: ${res.status}`);
-			}
-			return res.json();
-		})
-		.catch(error => {
-			console.error(`Ошибка при удалении карточки: ${error}`);
-			throw error;
-		});
+		.then(getResponse)
 };
 
 
 const updateAvatar = (link) => {
 	console.log("Обновление аватара, ссылка:", link);
-	return fetch(`https://nomoreparties.co/v1/${cohortId}/users/me/avatar`, {
+	return fetch(`${config.baseUrl}/users/me/avatar`, {
 		method: 'PATCH',
 		headers: {
-			authorization: authToken,
+			authorization: config.headers.authorization,
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({
 			avatar: link
 		})
 	})
-		.then(res => {
-			if (!res.ok) {
-				throw new Error(`Ошибка: ${res.status}`);
-			}
-			return res.json();
-	})
+		.then(getResponse)
 }
 
 async function imageUrlCheck(url) {

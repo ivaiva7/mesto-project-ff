@@ -1,14 +1,10 @@
 function openModal(popupElement) {
-	if (!popupElement) {
-		return;
-	}
 	popupElement.classList.add('popup_is-opened');
-	popupElement.addEventListener('click', closeModalByOverlay);
 	document.addEventListener('keydown', closeModalByEscape);
 }
 
 const closeModalByOverlay = (evt) => {
-	if (evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup')) {
+	if (evt.target.classList.contains('popup')) {
 		const popup = evt.currentTarget;
 		closeModal(popup);
 	}
@@ -24,13 +20,23 @@ const closeModalByEscape = (evt) => {
 };
 
 function closeModal(popupElement) {
-	if (!popupElement) {
-		return;
-	}
 	popupElement.classList.remove('popup_is-opened');
-	popupElement.removeEventListener('click', closeModalByOverlay);
+	popupElement.removeEventListener('mousedown', closeModalByOverlay);
 	document.removeEventListener('keydown', closeModalByEscape);
 }
 
+function setCloseModalEventListener (popupElement) {
+	const closeButton = popupElement.querySelector('.popup__close');
+	closeButton.addEventListener('click', () => {
+		closeModal(popupElement);
+	});
 
-export { openModal, closeModal, closeModalByEscape, closeModalByOverlay };
+	popupElement.addEventListener('mousedown', (evt) => {
+		if (evt.target.classList.contains('popup')) {
+			closeModal(popupElement);
+		}
+	});
+}
+
+
+export { openModal, closeModal, closeModalByEscape, closeModalByOverlay, setCloseModalEventListener };

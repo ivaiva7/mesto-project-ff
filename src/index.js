@@ -17,10 +17,10 @@ import {
     postNewCard,
     updateAvatar,
     imageUrlCheck,
-    deleteCardFromServer,
+    deleteCardFromServer
 } from './api.js';
 import { createCard, likeCard  } from './card.js';
-import { openModal, closeModal } from './modal.js';
+import { openModal, closeModal, setCloseModalEventListener } from './modal.js';
 import { clearValidation, enableValidation } from './validation.js';
 
 const contentSection = document.querySelector(".content");
@@ -117,8 +117,8 @@ async function submitNewPlaceForm(formElement) {
     try {
         toggleLoader(newCardLoader, newCardSubmitButton, true);
         const name = placeNameInput.value;
-        const imageUrl = linkInput.value;
-        const responseData = await postNewCard(name, imageUrl);
+        const link = linkInput.value;
+        const responseData = await postNewCard( { name, link} );
         const newCard = createCard(responseData, true, { likeCard: likeCard, openImage: openImage, openDeleteModal: openDeleteModal }, responseData.isLiked);
         placesList.prepend(newCard);
         formElement.reset();
@@ -134,6 +134,7 @@ async function submitNewAvatarForm(formElement) {
     try {
         toggleLoader(avatarLoader, avatarSubmitButton, true);
         const newAvatarUrl = avatarInput.value;
+        console.log('Проверка URL изображения:', newAvatarUrl);
         const isValid = await imageUrlCheck(newAvatarUrl);
         if (isValid) {
             const responseData = await updateAvatar(newAvatarUrl);
@@ -218,6 +219,11 @@ async function handleDeleteCard() {
 
 confirmButton.addEventListener('click', handleDeleteCard);
 
+setCloseModalEventListener(addPopup);
+setCloseModalEventListener(editPopup);
+setCloseModalEventListener(deletePopup);
+setCloseModalEventListener(avatarPopup);
+setCloseModalEventListener(popup);
 
 enableValidation(formElements, validationConfig);
 

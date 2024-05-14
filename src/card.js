@@ -1,9 +1,15 @@
 import { likeCardPut, dislikeCard } from './api.js';
 import { openDeleteModal } from './index.js';
 
+function getTemplate() {
+	return document
+		.querySelector("#card-template")
+		.content.querySelector(".card")
+		.cloneNode(true);
+}
+
 function createCard(item, isOwner, { likeCard, openImage, openDeleteModal }, isLiked) {
-	const cardTemplate = document.querySelector("#card-template").content;
-	const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
+	const cardElement = getTemplate();
 
 	const cardImage = cardElement.querySelector(".card__image");
 	cardImage.src = item.link;
